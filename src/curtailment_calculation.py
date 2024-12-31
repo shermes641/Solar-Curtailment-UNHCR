@@ -1,3 +1,43 @@
+"""
+Overview
+This Python script curtailment_calculation.py calculates and analyzes solar power curtailment for a given site and date. 
+It uses time-series data from a D-PV system and GHI (Global Horizontal Irradiance) data to determine the amount of energy lost due to various curtailment mechanisms. 
+The script identifies curtailment due to tripping events, voltage-VAR control (VVar), and voltage-watt control (VWatt). 
+It then summarizes the findings and generates visualizations of GHI, power output, and voltage-power relationships.
+
+Key Components
+compute(file_path, data_file, ghi_file): 
+    This is the main function that drives the curtailment analysis. 
+    It takes the directory path, D-PV data filename, and GHI data filename as input. 
+    It orchestrates the entire process from data loading and preprocessing to curtailment calculation and visualization.
+
+Data Loading and Preprocessing: 
+    The script uses the pandas library to load and manipulate data. 
+    It performs checks on data size and resamples the data to a consistent time interval (minutes). 
+    The FileProcessing class handles file input and general data processing tasks.
+
+Curtailment Calculation: 
+    Several classes and functions are responsible for calculating different types of curtailment:
+TrippingCurt:       Detects and quantifies energy loss due to tripping events.
+VVarCurt:           Calculates curtailment due to voltage-VAR control.
+VWattCurt:          Calculates curtailment due to voltage-watt control.
+Polyfit:            Performs polynomial fitting to estimate expected power generation in the absence of curtailment. This is used as a baseline for comparison.
+ClearSkyDay:        Determines if the given day is a clear sky day, which influences the curtailment analysis.
+EnergyCalculation:  Calculates the actual and expected energy generated.
+Visualization:      The DataVisualization class handles the generation of plots:
+    GHI plot over time.
+    Scatter plot of power output.
+    Line plot of power and voltage, highlighting curtailment periods.
+Output: 
+    The script displays a summary of the curtailment analysis in a tabular format, including the amount of energy curtailed due to each mechanism. 
+    It also generates the visualizations mentioned above.
+
+External Dependencies: 
+    The script relies on several external libraries, including pandas, matplotlib, numpy, datetime, pytz, 
+    seaborn, and custom modules like energy_calculation, clear_sky_day, tripping_curt, vvar_curt, vwatt_curt, polyfit, file_processing, 
+    and data_visualization. These modules likely contain the detailed implementations of the curtailment algorithms and data processing functions.
+"""
+
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt

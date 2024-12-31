@@ -1,3 +1,47 @@
+"""
+Overview
+This Python file (tripping_curt.py) implements an algorithm to detect and quantify energy curtailment caused by tripping events in solar photovoltaic (PV) systems. 
+It analyzes time-series power data to identify instances where the PV system's output drops sharply, indicating a possible tripping event. 
+The code then estimates the energy lost due to these events using either a linear or polynomial fit method. 
+The primary goal is to determine the amount of curtailed energy (in kWh) for a given site and date.
+
+Key Components
+TrippingCurt Class: This class encapsulates the core logic for tripping detection and curtailment calculation. 
+It's designed to be reusable across different datasets and scenarios.
+
+calculate_first_derivative_of_variable(input_df, col_name_string): 
+    This method calculates the first derivative of a specified column in a Pandas DataFrame. 
+    This is used to detect rapid changes in power output, which are indicative of tripping events.
+
+rcount(a): 
+    A utility function that calculates the cumulative count of zeros in a Pandas Series, resetting the count upon encountering a one. 
+    This helps in identifying continuous periods of zero or low power output.
+
+filter_sunrise_sunset_2(df): 
+    Filters the input DataFrame to include only data points between sunrise and sunset. 
+    This focuses the analysis on periods where solar generation is expected.
+
+check_tripping_curtailment(is_clear_sky_day, c_id, data_site, unique_cids, ac_cap, site_details, date): 
+    This is the main function that orchestrates the tripping analysis. 
+    It takes various inputs, including a flag for clear sky days, site identifiers, inverter capacity, and the date of analysis. 
+    It returns the tripping status ('Yes' or 'None'), 
+    the estimated curtailed energy, 
+    the estimation method used ('linear' or 'polyfit'), 
+    and the time-series data with an added column for expected power generation. 
+    The function uses either a linear or polynomial fit to estimate the expected power output in the absence of tripping. 
+    The choice between linear and polynomial fit is determined by whether it's a clear sky day and if the polynomial fit meets certain criteria. 
+    The function also includes data cleaning and filtering steps to handle missing data and remove very low output sites.
+
+Polyfit method (embedded within check_tripping_curtailment): 
+    This part of the code implements a polynomial fit method for estimating the expected power generation profile, primarily used on clear sky days. 
+    It iteratively refines the polynomial fit by removing outliers based on residuals. 
+    This method is more complex than the linear fit but can be more accurate under ideal conditions.
+
+The file uses several external libraries, including pandas, matplotlib, numpy, datetime, and pytz, 
+for data manipulation, visualization, and time zone handling. 
+The code is structured to process data for individual sites (identified by c_id) and dates. 
+It aims to provide a robust and accurate estimation of energy curtailment due to tripping events in solar PV systems.
+"""
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
