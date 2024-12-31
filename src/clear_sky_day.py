@@ -1,23 +1,52 @@
+"""
+Overview
+This Python file defines the ClearSkyDay class, which provides functionality to detect clear sky days based on Global Horizontal Irradiance (GHI) data. 
+It reads and processes GHI data from text files, analyzes the GHI profile for a given day, 
+and determines if the day qualifies as a clear sky day based on smoothness criteria and a minimum GHI threshold.
+
+Key Components
+ClearSkyDay Class: 
+    This class encapsulates all the methods related to clear sky day detection.
+
+check_clear_sky_day(self, date, file_path): 
+    This method is the main entry point for checking if a specific date is a clear sky day. 
+    It takes the date and file path of the GHI data as input and returns a boolean indicating whether the day is clear or not.
+
+string_to_float(self, string): 
+    A helper function to convert strings to floats, handling empty strings and spaces.
+
+get_timestamp_date_string(self, string): 
+    Converts date strings from "YYYY_MM" format to "YYYY-MM" format.
+
+separate_ghi_data(self, month, ghi):
+    This function was originally used to separate monthly GHI data into daily dataframes. 
+
+days_in_month(self, month): 
+    Returns the number of days in a given month.
+
+detect_clear_sky_day(self, ghi_df, min_max_ghi): 
+    This core function analyzes the GHI data for a given day. 
+    It checks for sudden variations in GHI, which would indicate cloud cover, 
+    and also checks if the maximum GHI exceeds a specified threshold. 
+    It returns a boolean indicating whether the day is a clear sky day and the average change in GHI.
+    The detect_clear_sky_day function uses two main criteria for clear sky day detection:
+        Smooth GHI profile: 
+            The average change in GHI throughout the day should be below a certain threshold 
+            (currently hardcoded as 5).
+        Sufficient maximum GHI: 
+            The maximum GHI value for the day must exceed a given threshold (min_max_ghi).
+    """
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime as dt
-import pytz #for timezone calculation
-import math
 import matplotlib.dates as md
-import gc
-import os
 from datetime import datetime
-import calendar
 import seaborn as sns; sns.set()
-import itertools
-#import datetime
 from time import gmtime, strftime
 from matplotlib import cm
 from IPython.display import display
-#%matplotlib qt
-#%matplotlib inline
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -81,8 +110,6 @@ class ClearSkyDay():
         res, average_delta_y = self.detect_clear_sky_day(ghi_df, 530)
 
         if res:
-            #clear_sky_days.append(date)
-            #overall_clear_sky_days_dict[dateFile].append(date)
             is_clear_sky_day = True
         else:
             is_clear_sky_day = False
@@ -163,7 +190,7 @@ class ClearSkyDay():
         for day in range(1, self.days_in_month(month_number) + 1):
             day_string = str(day)
             if day < 10:
-                day_string = "0" + day_string
+                day_string = f"0{day_string}"
 
             date = month + "-" + day_string
             df = key_ghi_values.loc[key_ghi_values['ts'] > date + " 00:00:01"]
@@ -234,4 +261,3 @@ class ClearSkyDay():
             return True, average_delta_y
         else:
             return False, average_delta_y
-

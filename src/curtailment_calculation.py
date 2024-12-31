@@ -41,23 +41,10 @@ External Dependencies:
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
-import datetime as dt
-import pytz #for timezone calculation
-import math
 import matplotlib.dates as md
-import gc
-import os
-from datetime import datetime
-import calendar
 import seaborn as sns; sns.set()
-import itertools
-#import datetime
-from time import gmtime, strftime
 from matplotlib import cm
 from IPython.display import display
-#%matplotlib qt
-#%matplotlib inline
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -66,7 +53,7 @@ rc={'font.size': FONT_SIZE, 'axes.labelsize': FONT_SIZE, 'legend.fontsize': FONT
     'axes.titlesize': FONT_SIZE, 'xtick.labelsize': FONT_SIZE, 'ytick.labelsize': FONT_SIZE}
 plt.rcParams.update(**rc)
 plt.rc('font', weight='bold')
- 
+
 # For label titles
 fontdict={'fontsize': FONT_SIZE, 'fontweight' : 'bold'}
 # can add in above dictionary: 'verticalalignment': 'baseline' 
@@ -84,16 +71,6 @@ from vwatt_curt import *
 from polyfit import *
 from file_processing import *
 from data_visualization import *
-
-#for local package testing
-# from energy_calculation import *
-# from clear_sky_day import *
-# from tripping_curt import *
-# from vvar_curt import *
-# from vwatt_curt import *
-# from polyfit import *
-# from file_processing import *
-# from data_visualization import *
 
 #class instantiation
 file_processing = FileProcessing()
@@ -134,8 +111,7 @@ def compute(file_path, data_file, ghi_file):
         - display_power_scatter
         - display_power_voltage
     '''
-    
-    
+
     site_details, unique_cids= file_processing.input_general_files(file_path)
     summary_all_samples = pd.DataFrame()
 
@@ -144,10 +120,7 @@ def compute(file_path, data_file, ghi_file):
     data['Timestamp'] = pd.to_datetime(data['Timestamp'].str.slice(0, 19, 1))
     data.set_index('Timestamp', inplace=True)
 
-    size_is_ok = file_processing.check_data_size(data)
-    if not size_is_ok:
-        print('Cannot analyze this sample due to incomplete data.')
-    else:
+    if size_is_ok := file_processing.check_data_size(data):
         ghi = pd.read_csv(file_path + ghi_file, index_col = 0)
         ghi.index = pd.to_datetime(ghi.index)
 
@@ -159,10 +132,9 @@ def compute(file_path, data_file, ghi_file):
 
         #check the expected power using polyfit
         data_site, polyfit, is_good_polyfit_quality = polyfit_f.check_polyfit(data_site, ac_cap)
-        #data_site, a, is_good_polyfit_quality = check_polyfit_constrained(data_site, ac_cap)
 
         is_clear_sky_day = clear_sky_day.check_clear_sky_day(date, file_path)
-        tripping_response, tripping_curt_energy, estimation_method, data_site = tripping_curt.check_tripping_curtailment(is_clear_sky_day, c_id, data_site, unique_cids, ac_cap, site_details, date)    
+        tripping_response, tripping_curt_energy, estimation_method, data_site = tripping_curt.check_tripping_curtailment(is_clear_sky_day, c_id, data_site, unique_cids, ac_cap, site_details, date)
         energy_generated, data_site = energy_calculation.check_energy_generated(data_site, date, is_clear_sky_day, tripping_curt_energy)
         vvar_response, vvar_curt_energy, data_site = vvar_curt.check_vvar_curtailment(c_id, date, data_site, ghi, ac_cap, dc_cap, EFF_SYSTEM, is_clear_sky_day)
         data_site, vwatt_response, vwatt_curt_energy = vwatt_curt.check_vwatt_curtailment(data_site, date, is_good_polyfit_quality, file_path, ac_cap, is_clear_sky_day)
@@ -176,3 +148,5 @@ def compute(file_path, data_file, ghi_file):
         data_visualization.display_power_scatter(data_site, ac_cap)
         plt = data_visualization.display_power_voltage(data_site, date, vwatt_response, vvar_response)
         plt.show()
+    else:
+        print('Cannot analyze this sample due to incomplete data.')

@@ -47,21 +47,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime as dt
-import pytz #for timezone calculation
-import math
 import matplotlib.dates as md
-import gc
-import os
 from datetime import datetime
-import calendar
 import seaborn as sns; sns.set()
-import itertools
-#import datetime
-from time import gmtime, strftime
 from matplotlib import cm
 from IPython.display import display
-#%matplotlib qt
-#%matplotlib inline
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -70,7 +60,7 @@ rc={'font.size': FONT_SIZE, 'axes.labelsize': FONT_SIZE, 'legend.fontsize': FONT
     'axes.titlesize': FONT_SIZE, 'xtick.labelsize': FONT_SIZE, 'ytick.labelsize': FONT_SIZE}
 plt.rcParams.update(**rc)
 plt.rc('font', weight='bold')
- 
+
 # For label titles
 fontdict={'fontsize': FONT_SIZE, 'fontweight' : 'bold'}
 # can add in above dictionary: 'verticalalignment': 'baseline' 
@@ -101,7 +91,7 @@ class TrippingCurt():
         filter_sunrise_sunset_2 : Filter a D-PV Time series data based on its estimated sunrise and sunset time, for Naomi's data format.
         check_tripping_curtailment : Check the tripping response and the amount of energy curtailed bcs of tripping in kWh for certain data and site.
     """
-    
+
     def calculate_first_derivative_of_variable(self, input_df, col_name_string) :
         """Pass a df FOR A SINGLE C_ID (with 'power_kW' col!!!) Returns the same df with one new cols: power_kW_first_deriv.
 
@@ -174,12 +164,6 @@ class TrippingCurt():
 
         sunrise = tmp_df.index[0]
         sunset = tmp_df.index[-1]
-        
-#         if df['power_kW'][0] > LIMIT_DAY_POWER/1000:
-#             sunrise = df.index[0]
-#         if df['power_kW'][-1] > LIMIT_DAY_POWER/1000:
-#             sunset = df.index[-1]
-        
 
         df = df.loc[df.index >= sunrise]
         df = df.loc[df.index <= sunset]
@@ -202,14 +186,13 @@ class TrippingCurt():
         tripping_response (str): Yes or None, whether there is a tripping response by the inverter
         tripping_curt_energy (float): The amount of energy curtailed in that date and site in kWh
         estimation_method (str): Linear or polyfit. Polyfit is only used when it is a clear sky day and the fit passes 
-                                 some criterias. Otherwise always use linear.
+        some criterias. Otherwise always use linear.
         data_site (df): D-PV time series data with a new column: 'power_expected_linear' which is the estimated power 
                         production without curtailment, estimated using linear method. 
 
         Functions needed:
         - filter_sunrise_sunset_2
         - calculate_first_derivative_of_variable
-
 
 
         Some parts are modified to be compatible for SolA dataset input and implementation
@@ -253,7 +236,7 @@ class TrippingCurt():
             'sum_ac' : ac_cap/1000,
             'time_offset' : float("nan")
         }, index = data_site.index)
-        unaltered_data.index.rename('ts', inplace=True) 
+        unaltered_data.index.rename('ts', inplace=True)
 
         # rename energy column
         unaltered_data = unaltered_data.rename(columns = {'e' : 'energy', 'd':'duration', 'sum_ac':'ac'})
@@ -378,7 +361,6 @@ class TrippingCurt():
             sun_set_min = str(sun_set_min)
         sun_set_for_filter = str(sun_set_hour - 1) + ':' + sun_set_min + ':' + str(00)
         '''
-        #data = data.between_time(sun_rise_for_filter, sun_set_for_filter)
         sunrise, sunset, data = self.filter_sunrise_sunset_2(data)
 
 
