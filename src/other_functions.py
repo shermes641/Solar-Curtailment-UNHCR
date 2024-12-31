@@ -1,23 +1,189 @@
+"""
+Overview
+    This Python file (other_functions.py) contains a collection of utility functions related to 
+    solar panel data analysis. While currently unused in the main application, these functions 
+    provide helpful tools for tasks such as data loading, filtering, processing, and visualization. 
+    They offer functionalities for calculating expected energy generation, handling curtailment, 
+    assessing volt-watt behavior, and determining PV penetration.
+
+Key Components
+Data Input/Output and Filtering:
+    input_monthly_files(): 
+        Loads and cleans monthly D-PV (distributed photovoltaic) and GHI (global horizontal irradiance) 
+        data from SoLA formatted files.
+    filter_date(): 
+        Filters a DataFrame by a Overview
+        
+This Python file (other_functions.py) contains a collection of utility functions related to solar panel
+data analysis. While not currently in active use specific date. 
+filter_data_clear_sky_days(): 
+    Filters data to include only clear-sky days.
+
+Energy Calculation and Polyfit:
+`check_energy_expected_generated, these functions provide functionalities such as data loading, filtering,
+processing, and visualization, potentially valuable for future analysis or adaptation. 
+The functions cover areas like energy generation calculation, file processing, polynomial fitting, 
+voltage-watt behavior assessment, and curtailment analysis.
+Key Components
+    **Data Input/Output and()`: 
+        Calculates the expected energy generated on a given day.
+    check_polyfit_constrained(): 
+        Calculates expected power generation with constraints, using a quadratic model. Includes quality 
+        checks for the polyfit.
+    func(): 
+        Calculates the result of a quadratic function ( Processing:**
+    input_monthly_files(): 
+        Loads and preprocesses SoLA format D-PV (distributed photovoltaic) and GHI 
+        (Global Horizontal Irradiance) data for a given month. Handles timestamp conversion 
+        (used in polyfitting).
+    sum_squared_error(): 
+        Calculates the sum of squared errors for a polyfit (used in optimization).
+    filter_curtailment(): 
+        Filters power data to remove curtailment instances, preparing data for polyfit analysis.
+        **Volt- Adelaide local time.
+    filter_date(): 
+        Filters a DataFrame by a specific date.
+    get_telemetry_string(): 
+        Converts a date string (YYYYMM) to a format suitable for GHI filenamesWatt Analysis:**
+    get_telemetry_string(): 
+        Converts date strings to the format used in GHI filenames.
+    convert_sa_time_to_utc(): 
+        Converts time from South Australia to UTC.
+    convert_to_sa_time(): 
+        Converts time (YYYY_MM).
+    filter_data_clear_sky_days(): 
+        Filters data to include only clear-sky days.
+    convert_sa_time_to_utc(): 
+        Converts time from South Australia to UTC.
+        `convert_to_sa_time from UTC to South Australia time.
+    organise_sites(): 
+        Organizes telemetry data into a hierarchical structure (site -> circuits -> days of data).
+    assess_volt_watt_behaviour_site(): 
+        Assesses aggregated volt-watt data for a given site. *()`: Converts time from UTC to 
+        South Australia time.
+    remove_tstamp_ms():
+        Removes milliseconds from timestamp strings.
+    change_to_timestamp(): 
+        Converts a time string to a timestamp object.
+
+Energy Calculation and Analysis:
+    check_energy overall_volt_watt_assessment()`: 
+        Assesses volt-watt behavior across all sites and categorizes them (Volt-Watt, Non Volt-Watt, Inconclusive).
+    determine_volt_watt_scatter_compliance(): 
+        Checks if data points fall within the buffer range of the volt-_expected_generated()`: 
+        Calculates the expected energy generated on a given day.
+    calculate_months_energy_yield(): 
+        Calculates the total energy yield for a given month and circuit ID.
+    area_under_curve(): 
+        Calculates the area under a curve (integrationwatt curve.
+    assess_curtailment_day(): 
+        Quantifies curtailment due to volt-watt behavior.
+    
+    Several helper functions for volt-watt analysis (e.g., volt_watt_curve(), get_watts_curve(), display_day()) for energy calculations.
+    assess_curtailment_day(): 
+        Quantifies curtailment due to volt-watt behavior.
+    get_expected_power(): 
+        Calculates expected power based on a polyfit model.
+
+Polynomial Fitting:
+func():).
+
+PV Penetration:
+    get_penetration_by_postcode(): 
+        Calculates PV penetration based on postcode and dwelling data.
+
+Data Visualization:
+
+    distribution_plot_1(): 
+        Creates a distribution plot of curtailment across sites and dates.
+        Evaluates a quadratic function.
+    sum_squared_error(): 
+        Calculates the sum of squared errors for a polyfit.
+    check_polyfit_constrained(): 
+        Performs constrained polynomial fitting to estimate expected power generation.
+Volt-Watt Behavior and Curtailment:
+    display_day(): 
+        Generates plots of power/voltage vs. time and W/VA vs. voltage for a given circuit and date.
+
+Helper Functions:
+
+    isfloat(): 
+        Checks if a variable is a float.
+    area_under_curve(): 
+        Calculates * get_penetration_by_postcode(): Calculates PV penetration by postcode.
+    find_over_voltage_sites(): 
+        Identifies sites experiencing overvoltage.
+    c_id_to_site_id():  
+        Maps circuit ID to site ID. the area under a curve (used for energy integration).
+    filter_array(): 
+        Filters an array based on min/max values.
+    assess_volt_watt_behaviour_site(): 
+        Assesses volt-watt behavior for a given site. * 
+    assess_volt_watt_behaviour_circuit(): 
+        Assesses volt-watt behavior for a given circuit. * 
+    append_volt_watt_behaviour_data() 
+    These functions are well-documented and organized, making them relatively easy to 
+    understand and potentially integrate into other parts of the project if needed. : 
+    Organizes data for volt-watt compliance determination. * 
+    determine_compliance(): 
+        Determines volt-watt compliance. * 
+    get_max_volt_watt_curve(): 
+        Calculates the maximum allowed power based on voltage and volt-watt limits. * 
+    overall_volt_watt_assessment(): 
+    Assesses overall volt-watt behavior across multiple sites. * 
+    site_volt_watt_assessment(): 
+        Assesses volt-watt behavior for a single site. * 
+    determine_volt_watt_scatter_compliance():  
+        Checks compliance of volt-watt scatter data. * 
+    filter_curtailment(): 
+        Filters power data to remove curtailment instances.
+
+Data Filtering and Manipulation:
+
+    isfloat(): 
+        Checks if a value is a float.
+    filter_array(): 
+        Filters an array based on a specified range.
+    get_datetime(): 
+        Converts timestamp strings to numerical datetime values.
+    change_w_to_kw(): 
+        Converts power values from watts to kilowatts.
+
+Visualization:
+
+    distribution_plot_1(): 
+        Creates a distribution plot of curtailment across sites.
+    display_day(): 
+        Displays daily power and voltage data, including volt-watt curves.
+Helper functions for plotting: 
+    get_sample_voltages(), get_watts_curve(), get_watts_curve_buffer().
+
+Data Structures: 
+    The code utilizes dictionaries and custom classes (Site, Circuit) to organize and manage 
+    data related to sites, circuits, and the solar panel data. 
+    These classes are not defined in this file but are essential for understanding the data organization 
+    used by several functions.
+
+Global Parameters: 
+    The file sets global parameters for font sizes and plot styling, ensuring consistent visualization 
+    across different functions.
+
+This summary provides a high-level understanding of the file's contents. 
+While the functions are not currently used, they offer a library of potentially useful tools for solar 
+data analysis, particularly related to volt-watt behavior and curtailment. 
+Further investigation into the specific implementation of each function may be necessary depending 
+on the desired use case.
+"""
+    
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime as dt
 import pytz #for timezone calculation
-import math
 import matplotlib.dates as md
-import gc
-import os
 from datetime import datetime
-import calendar
-import seaborn as sns; sns.set()
-import itertools
-#import datetime
-from time import gmtime, strftime
-from matplotlib import cm
-from IPython.display import display
-#%matplotlib qt
-#%matplotlib inline
+import seaborn as sns; sns.set_theme()
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -1536,3 +1702,129 @@ def filter_curtailment(df):
     filter_second_half.reverse()
     filter_array = filter_first_half + filter_second_half
     return x_array[filter_array], power_array[filter_array]
+
+### SUGGESTIONS SOURCERY
+# Hey there - I've reviewed your changes - here's some feedback:
+
+# Overall Comments:
+
+# Consider splitting this large utility file into smaller logical modules (e.g. data_processing.py, visualization.py, math_utils.py) to improve maintainability and readability
+# Replace global variables with proper class attributes or function parameters to reduce coupling and improve testability
+# Standardize docstring format across all functions and ensure complete documentation coverage
+# Here's what I looked at during the review
+# 🟢 General issues: all looks good
+# 🟢 Security: all looks good
+# 🟢 Testing: all looks good
+# 🟢 Complexity: all looks good
+# 🟢 Documentation: all looks good
+# e:/_UNHCR/CODE/solar_unhcr/src/other_functions.py:910
+
+# suggestion(code_refinement): Complex function with multiple return values and commented-out code
+#     return l
+
+# # INDIVIDUAL DAY/SITE ANALYSIS 
+# def determine_compliance(polyfit, graph_df, max_power, vwLimit):
+#     """Count how many datapoints are in the buffer range of the referenced VW curve.
+
+# The function has multiple commented-out sections and returns several arrays. Consider breaking it down into smaller, more focused functions with clearer responsibilities.
+
+# Suggested implementation:
+
+# def calculate_datapoints_in_buffer_range(polyfit, graph_df, max_power, vw_limit):
+#     """
+#     Count datapoints within the buffer range of the referenced VW curve.
+
+#     Args:
+#         polyfit (array-like): Polynomial fit data
+#         graph_df (DataFrame): Graph dataframe
+#         max_power (float): Maximum power threshold
+#         vw_limit (float): VW limit for buffer range
+
+#     Returns:
+#         list: Datapoints within the specified buffer range
+#     """
+#     # Implement the core logic here
+#     datapoints_in_range = []
+
+#     # Add implementation details
+#     return datapoints_in_range
+
+# def analyze_compliance(polyfit, graph_df, max_power, vw_limit):
+#     """
+#     Perform comprehensive compliance analysis using buffer range calculation.
+
+#     Args:
+#         polyfit (array-like): Polynomial fit data
+#         graph_df (DataFrame): Graph dataframe
+#         max_power (float): Maximum power threshold
+#         vw_limit (float): VW limit for buffer range
+
+#     Returns:
+#         dict: Compliance analysis results
+#     """
+#     datapoints = calculate_datapoints_in_buffer_range(polyfit, graph_df, max_power, vw_limit)
+
+#     # Additional analysis logic
+#     compliance_results = {
+#         'datapoints': datapoints,
+#         # Add more analysis metrics
+#     }
+
+#     return compliance_results
+
+# The refactoring breaks the original function into two more focused functions:
+
+# calculate_datapoints_in_buffer_range(): Handles the core calculation
+# analyze_compliance(): Provides a higher-level analysis wrapper
+# Added more descriptive docstrings with clear parameter and return type descriptions
+
+# Removed the commented-out code
+
+# Used more descriptive variable names (e.g., vw_limit instead of vwLimit)
+
+# Suggested a dictionary return type for more comprehensive results
+
+# The developer should review and adapt these suggestions to match the specific requirements of their use case.
+
+# Resolve
+# e:/_UNHCR/CODE/solar_unhcr/src/other_functions.py:849
+
+# suggestion(performance): Inefficient array filtering with multiple type conversions
+
+
+
+# def filter_array(x_array, y_array, max_val, min_val):
+#     """FILTER ARRAY TO INCLUDE VALUES WITHIN A CERTAIN RANGE
+
+# The function converts between series and lists multiple times. Consider using numpy for more efficient filtering or vectorized operations.
+
+# Suggested implementation:
+
+# import numpy as np
+
+# def filter_array(x_array, y_array, max_val, min_val):
+#     """
+#     Efficiently filter arrays to include values within a specified range using NumPy.
+
+#     Args:
+#         x_array (array-like): Input x-coordinates
+#         y_array (array-like): Input y-coordinates
+#         max_val (float): Maximum value for filtering
+#         min_val (float): Minimum value for filtering
+
+#     Returns:
+#         tuple: Filtered x and y arrays within the specified range
+#     """
+#     # Convert inputs to NumPy arrays for efficient processing
+#     x_array = np.asarray(x_array)
+#     y_array = np.asarray(y_array)
+
+#     # Create a mask for values within the specified range
+#     mask = (y_array >= min_val) & (y_array <= max_val)
+
+#     # Return filtered arrays using the mask
+#     return x_array[mask], y_array[mask]
+
+# Ensure NumPy is installed in the project environment
+# Update any calling code to handle the NumPy array return type if necessary
+# Consider adding type hints if using Python 3.6+

@@ -1,23 +1,36 @@
+"""
+Overview
+    This Python code defines the VWattCurt class, which is designed to analyze solar panel data 
+    and detect V-Watt curtailment. V-Watt curtailment is a regulatory mechanism that 
+    reduces solar panel power output when the grid voltage exceeds a certain limit. 
+    The class provides methods to process power data, determine if V-Watt curtailment is occurring, 
+    and calculate the energy lost due to curtailment.
+
+Key Components
+VWattCurt Class: 
+    This class encapsulates the V-Watt curtailment analysis logic.
+    slice_end_off_df(self, df):
+        Removes initial and trailing periods of zero power production from the input DataFrame.
+    filter_power_data(self, graph_df): 
+        Filters power data to keep only increasing values in the first half of the day (up to peak power) and decreasing values in the second half. This helps in identifying the characteristic curve of V-Watt curtailment.
+    volt_watt_curve(self, v, limit): 
+        Calculates the maximum allowed power output (as a fraction of inverter capacity) based on the current voltage and the V-Watt limit. This function represents the V-Watt curve.
+    check_overvoltage_avail(self, data_site):   Checks if the maximum voltage in the data exceeds the minimum V-Watt limit (235V) as defined in AS/NZS 4777.2. This is a prerequisite for V-Watt curtailment.
+    check_energy_curtailed(self, curtailed_data): 
+        Calculates the total energy curtailed due to V-Watt response by comparing the expected power output with the actual power output during curtailment periods.
+    check_vwatt_response(self, data_site, ac_cap): 
+        This is the core function for detecting V-Watt response. It iterates through possible V-Watt limits, filters data points where curtailment is suspected, and checks if the power output falls within a buffer range around the V-Watt curve. If a sufficient percentage of data points fall within this range, it indicates V-Watt curtailment.
+    check_vwatt_curtailment(self, data_site, date, is_good_polyfit_quality, file_path, ac_cap, is_clear_sky_day): 
+        This function orchestrates the V-Watt curtailment analysis. It checks for clear-sky conditions and good data quality before calling check_vwatt_response to determine if curtailment is occurring and calculate the curtailed energy.
+
+The code uses a combination of data filtering, curve fitting, and thresholding to identify and quantify 
+V-Watt curtailment. The check_vwatt_response function is particularly important as it 
+implements the core logic for detecting V-Watt curtailment based on the V-Watt curve and buffer ranges.
+"""
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
-import datetime as dt
-import pytz #for timezone calculation
-import math
-import matplotlib.dates as md
-import gc
-import os
-from datetime import datetime
-import calendar
-import seaborn as sns; sns.set()
-import itertools
-#import datetime
-from time import gmtime, strftime
-from matplotlib import cm
-from IPython.display import display
-#%matplotlib qt
-#%matplotlib inline
+import seaborn as sns; sns.set_theme()
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -327,3 +340,50 @@ class VWattCurt():
         vwatt_response, vwatt_curt_energy = self.check_vwatt_response(data_site, ac_cap)
 
         return data_site, vwatt_response, vwatt_curt_energy
+
+### SUGGESTIONS SOURCERY
+# Hey there - I've reviewed your changes - here's some feedback:
+
+# Overall Comments:
+
+# Consider removing global variables (best_percentage, best_count, etc.) and making them instance variables or method parameters instead. Global state makes the code harder to maintain and test.
+# Please complete the module docstring and add explanations for magic numbers (like BUFFER_HIGH_VAL=150). Document the reasoning behind these constants to improve maintainability.
+# Here's what I looked at during the review
+# 🟡 General issues: 2 issues found
+# 🟢 Security: all looks good
+# 🟢 Testing: all looks good
+# 🟢 Complexity: all looks good
+# 🟢 Documentation: all looks good
+# e:/_UNHCR/CODE/solar_unhcr/src/vwatt_curt.py:243
+
+# issue(bug_risk): Improve error handling in percentage calculation
+#                     best_count = count_in_buffer_range
+#                     best_Vlimit = Vlimit
+#                     vwatt_data = suspect_data
+#             except:
+#                 pass
+
+# Replace silent except block with specific exception handling or logging to prevent masking potential calculation errors.
+
+# Resolve
+# e:/_UNHCR/CODE/solar_unhcr/src/vwatt_curt.py:246
+
+# suggestion(code_refinement): Avoid modifying input DataFrames in-place
+#             except:
+#                 pass
+
+#         data_site['power_limit_vw'] = data_site['voltage'].apply(self.volt_watt_curve, limit = best_Vlimit) * ac_cap
+
+#         #step 4. If the percentage from the previous step is higher than certain limit, we say it shows VWatt response.
+# Create a copy of the input DataFrame before modification to prevent unexpected side effects and maintain input data integrity.
+
+# Suggested implementation:
+
+#         # Create a copy of the DataFrame to avoid modifying the original
+#         data_site = data_site.copy()
+#         data_site['power_limit_vw'] = data_site['voltage'].apply(self.volt_watt_curve, limit = best_Vlimit) * ac_cap
+
+# Depending on the context of the method, you might want to consider:
+
+# Returning the modified copy instead of modifying in-place
+# Adding a parameter to control whether a copy is made

@@ -45,13 +45,9 @@ It aims to provide a robust and accurate estimation of energy curtailment due to
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import numpy as np
-import datetime as dt
-import matplotlib.dates as md
-from datetime import datetime
-import seaborn as sns; sns.set()
-from matplotlib import cm
-from IPython.display import display
+import seaborn as sns; sns.set_theme()
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -637,10 +633,7 @@ class TrippingCurt():
             # (only really useful for clear sky days! Otherwise the straight line approximation is preferable!!)
             # See write up of method for key limitations and next steps
 
-            #------------------------ Step 0: Import required packages ------------------------
-            # Import packages required for program
-            import matplotlib.dates as mdates
-            import seaborn as sns; sns.set()
+    
             # For graphing time series
             time_fmt = mdates.DateFormatter('%H:%M')
 

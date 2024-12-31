@@ -41,9 +41,7 @@ External Dependencies:
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.dates as md
-import seaborn as sns; sns.set()
-from matplotlib import cm
+import seaborn as sns; sns.set_theme()
 from IPython.display import display
 
 #SET GLOBAL PARAMETERS

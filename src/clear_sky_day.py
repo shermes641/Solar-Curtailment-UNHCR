@@ -39,14 +39,7 @@ detect_clear_sky_day(self, ghi_df, min_max_ghi):
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
-import datetime as dt
-import matplotlib.dates as md
-from datetime import datetime
-import seaborn as sns; sns.set()
-from time import gmtime, strftime
-from matplotlib import cm
-from IPython.display import display
+import seaborn as sns; sns.set_theme()
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================

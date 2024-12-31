@@ -1,23 +1,42 @@
+"""
+Overview
+    This Python file (file_processing.py) provides a class FileProcessing designed to handle and process 
+    data related to solar power generation. 
+    It includes functionalities for inputting data from various sources 
+    (circuit details, site details, GHI data), summarizing results into a convenient dataframe, 
+    and performing checks and preprocessing steps on the data, 
+    such as resampling and data size validation. 
+    The file also sets global parameters for plot styling.
+
+Key Components
+FileProcessing Class: 
+    This class encapsulates the core file processing logic.
+input_general_files(self, file_path): 
+    Reads circuit details, site details, and unique circuit IDs from CSV files located in the specified 
+    file_path. Returns the merged site and circuit details as a dataframe and unique circuit IDs.
+summarize_result_into_dataframe(...): 
+    Takes various parameters related to energy generation (actual, expected, curtailment, etc.) 
+    and organizes them into a summary dataframe. 
+    This function is crucial for reporting and analysis.
+check_data_size(self, data): 
+    Performs a basic sanity check on the input D-PV time series data to ensure it contains a 
+    reasonable number of data points and covers the expected daytime hours.
+resample_in_minute(self, data): 
+Resamples the input D-PV time series data to a minute-level resolution if the original data has a 
+higher resolution (more than 2000 data points). This function helps standardize the data frequency.
+read_ghi(self, file_path, ghi_filename): 
+    Reads Global Horizontal Irradiance (GHI) data from a CSV file, adds a timestamp column, 
+    and converts the GHI values to numeric format. It returns both the modified and original GHI dataframes.
+Global Parameters: 
+    The file sets global parameters for font sizes and plot styling using matplotlib.pyplot. 
+    This ensures consistent visualization across the project.
+"""
+
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import datetime as dt
-import pytz #for timezone calculation
-import math
-import matplotlib.dates as md
-import gc
-import os
-from datetime import datetime
-import calendar
-import seaborn as sns; sns.set()
-import itertools
-#import datetime
-from time import gmtime, strftime
-from matplotlib import cm
-from IPython.display import display
-#%matplotlib qt
-#%matplotlib inline
+import seaborn as sns; sns.set_theme()
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -172,3 +191,52 @@ class FileProcessing():
         # Deal with the space characters (ghi is in object/string form at the moment)
         ghi['Mean global irradiance (over 1 minute) in W/sq m'] = [float(ghi_t) if ghi_t.count(' ')<= 3 else np.nan for ghi_t in ghi['Mean global irradiance (over 1 minute) in W/sq m']]
         return ghi, ghi_ori
+
+### SUGGESTIONS SOURCERY
+# Hey there - I've reviewed your changes - here's some feedback:
+
+# Overall Comments:
+
+# Consider adding error handling for file operations - the current implementation assumes all file operations will succeed which could lead to runtime errors if files are missing or permissions are incorrect.
+# Replace magic numbers (e.g., 2000 in resample_in_minute, 0.05 and 2 in check_data_size) with named constants and add documentation explaining their significance.
+# Here's what I looked at during the review
+# 🟡 General issues: 1 issue found
+# 🟢 Security: all looks good
+# 🟢 Testing: all looks good
+# 🟢 Complexity: all looks good
+# 🟢 Documentation: all looks good
+# e:_UNHCR\CODE\solar_unhcr\src\file_processing.py:52
+
+# suggestion(code_refinement): Method has many parameters, consider using a dataclass or dictionary
+#         unique_cids = pd.read_csv(file_path + r"/UniqueCids500.csv", index_col = 0)
+#         return site_details, unique_cids
+
+#     def summarize_result_into_dataframe(self, c_id, date, is_clear_sky_day, energy_generated, energy_generated_expected, estimation_method, tripping_response, tripping_curt_energy, vvar_response, vvar_curt_energy, vwatt_response, vwatt_curt_energy):
+#         """Collect results into a dataframe to be shown as summary.
+
+# With 12 parameters, this method signature is quite complex. A dataclass or dictionary could make the method more maintainable.
+
+# Suggested implementation:
+
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# from dataclasses import dataclass
+
+# The method signature has been changed to use the new ResultSummary dataclass.
+# A new to_dataframe() method has been added to the dataclass to convert the summary to a DataFrame.
+# Developers will now create a ResultSummary instance and call to_dataframe() instead of the previous method.
+# Example usage would look like:
+
+# summary = ResultSummary(
+#     c_id='some_id', 
+#     date='2023-01-01', 
+#     is_clear_sky_day=True, 
+#     # ... other parameters ...
+# )
+# result_df = summary.to_dataframe()
+# This approach provides several benefits:
+
+# Type hints for all parameters
+# Easier to read and understand the data structure
+# Immutable by default
+# Can be easily extended or modified

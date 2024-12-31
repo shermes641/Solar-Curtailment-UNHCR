@@ -1,23 +1,50 @@
+"""
+Overview
+This Python file (vvar_curt.py) provides functionality for detecting and calculating Volt-Var (VVAr) 
+curtailment in solar power systems. VVAr curtailment occurs when a solar inverter reduces 
+its real power output to comply with grid voltage regulations while providing reactive power support. 
+The file aims to identify instances of VVAr curtailment and quantify the resulting energy loss. 
+It uses data analysis techniques, including linear regression and polynomial fitting, 
+to estimate the potential power generation in the absence of curtailment.
+
+Key Components
+VVarCurt Class: 
+    This class encapsulates the core logic for VVAr curtailment analysis. 
+    It contains two main methods:
+
+    site_organize(): 
+        This method prepares data for a single solar site. It takes site details, time-series data, 
+        and unique site identifiers as input. It performs data cleaning, polarity correction, 
+        and calculates apparent power and power factor.
+    check_vvar_curtailment(): 
+        This method analyzes the VVAr response of a site and calculates the curtailed energy. 
+        It checks for specific conditions related to reactive power, apparent power, and inverter capacity. 
+        It uses helper functions (not included in this excerpt) like slice_end_of_df, filter_power_data, 
+        filter_data_limited_gradients, and get_polyfit to process the data and estimate the maximum possible 
+        power generation without curtailment. It determines if VVAr curtailment is occurring based on 
+        predefined thresholds and voltage limits.
+
+External Dependencies: The code relies on custom external libraries and modules:
+    polyfit (custom module): 
+        Likely provides polynomial fitting functionality.
+    vwatt_curt (custom module): 
+        Likely contains helper functions for VVAr curtailment analysis.
+
+Global Parameters: 
+    The file defines global parameters for font sizes and styling, which are used for plotting and 
+    visualization.
+
+The file focuses on analyzing time-series data of power and reactive power to detect and quantify 
+VVAr curtailment. It uses a combination of data filtering, linear regression, 
+and polynomial fitting to estimate the potential energy loss due to curtailment.
+The VVarCurt class provides a structured approach to organize and analyze data for individual solar sites.
+"""
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime as dt
-import pytz #for timezone calculation
-import math
-import matplotlib.dates as md
-import gc
-import os
-from datetime import datetime
-import calendar
-import seaborn as sns; sns.set()
-import itertools
-#import datetime
-from time import gmtime, strftime
-from matplotlib import cm
-from IPython.display import display
-#%matplotlib qt
-#%matplotlib inline
+import seaborn as sns; sns.set_theme()
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -34,9 +61,6 @@ fontdict={'fontsize': FONT_SIZE, 'fontweight' : 'bold'}
 style = 'ggplot' # choose a style from the above options
 plt.style.use(style)
 
-# LOCAL TEST
-# from polyfit import Polyfit #polyfit here is a python module
-# from vwatt_curt import VWattCurt
 
 # #PACKAGE IMPLEMENTATION TEST
 from polyfit import Polyfit
@@ -286,3 +310,57 @@ class VVarCurt():
         vvar_curt_energy = data_curtailment[data_curtailment['curtailment_energy'] > 0]['curtailment_energy'].sum()
         data_site['power_limit_vv'] = np.sqrt(ac_cap ** 2 - data_site['reactive_power']**2)
         return vvar_response, vvar_curt_energy, data_site
+
+### SUGGESTIONS SOURCERY
+# Hey there - I've reviewed your changes - here's some feedback:
+
+# Overall Comments:
+
+# Consider adding proper docstrings to all functions and the main class, including parameter descriptions and return value documentation. The current docstrings are incomplete or missing.
+# Magic numbers like VAR_T=100 and DURATION=60 should be defined as class constants with clear documentation of their meaning and units.
+# Here's what I looked at during the review
+# 🟡 General issues: 2 issues found
+# 🟢 Security: all looks good
+# 🟢 Testing: all looks good
+# 🟢 Complexity: all looks good
+# 🟢 Documentation: all looks good
+# e:_UNHCR\CODE\solar_unhcr\src\vvar_curt.py:154
+
+# suggestion(code_refinement): Consider using an enum or constants for response states
+
+#         is_inject_or_absorb = (data_site['reactive_power'].abs() > 100).any()
+#         if not is_inject_or_absorb:
+#             vvar_response = 'None'
+#         else:
+#             # OBTAIN REACTIVE POWER LEVEL IN %
+# Using string literals can lead to potential typos and makes the code less maintainable
+
+# Suggested implementation:
+
+# import pandas as pd
+# from enum import Enum, auto
+
+# class VVarResponseState(Enum):
+#     NONE = 'None'
+#     INJECTING = 'Injecting'
+#     ABSORBING = 'Absorbing'
+
+#         is_inject_or_absorb = (data_site['reactive_power'].abs() > 100).any()
+#         if not is_inject_or_absorb:
+#             vvar_response = VVarResponseState.NONE
+#         else:
+
+# You may want to update any other parts of the code that reference the vvar_response to use the new enum.
+# If this enum is used in multiple files, consider moving it to a separate constants or enums module.
+# Depending on the context of the code, you might want to set the vvar_response to INJECTING or ABSORBING based on the sign of the reactive power.
+# Resolve
+# e:_UNHCR\CODE\solar_unhcr\src\vvar_curt.py:228
+
+# issue(bug_risk): Bare except clause masks potential errors
+#                 else:
+#                     vvar_response = 'None'
+                    
+#             except:
+#                 vvar_response = 'None'
+
+# Consider catching specific exceptions and logging the error for debugging

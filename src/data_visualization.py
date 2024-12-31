@@ -38,7 +38,7 @@ Global Parameters:
 #IMPORT PACKAGES
 import matplotlib.pyplot as plt
 from datetime import datetime
-import seaborn as sns; sns.set()
+import seaborn as sns; sns.set_theme()
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================

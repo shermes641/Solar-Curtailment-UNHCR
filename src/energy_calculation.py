@@ -1,23 +1,42 @@
+"""
+Overview
+    This Python file (energy_calculation.py) defines a class EnergyCalculation that provides methods 
+    for calculating and analyzing energy generation from solar power systems. 
+    It focuses on determining the actual energy generated, estimating the expected generation 
+    without curtailment (reduction in output), and identifying the estimation method used. 
+    The file also includes several imported libraries for data analysis, visualization, 
+    and time zone handling.
+
+Key Components
+EnergyCalculation Class: 
+    This class encapsulates the core functionality of the file. It contains two main methods:
+
+check_energy_generated(data_site, date, is_clear_sky_day, tripping_curt_energy): 
+    This method calculates the total energy generated on a specific date for a given site. 
+    It takes the time-series data, date, clear sky status, and energy loss due to tripping as input. 
+    It returns the total energy generated and potentially updates the input data with expected power values.
+check_energy_expected(energy_generated, tripping_curt_energy, vvar_curt_energy, vwatt_curt_energy, is_clear_sky_day): 
+    This method estimates the expected energy generation without curtailment based on the actual generation 
+    and various curtailment factors (tripping, VVAr, VWatt). 
+    It also determines the estimation method used ("Polyfit" for clear sky days, "Linear" 
+    for non-clear sky days with tripping, or "n/a" otherwise).
+Global Parameters: 
+    The file sets global parameters for font sizes and styling used in plots, 
+    although plotting itself is not implemented within this file. 
+    This suggests that these settings are used by other parts of the project that utilize the 
+    calculated energy values.
+
+External Libraries: 
+    The file imports several external libraries, including matplotlib, numpy, datetime, pytz, math, seaborn, and others. 
+    These libraries are used for data manipulation, visualization, time zone handling, and mathematical calculations.
+"""
+
 #IMPORT PACKAGES
-import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 import datetime as dt
-import pytz #for timezone calculation
 import math
-import matplotlib.dates as md
-import gc
-import os
-from datetime import datetime
-import calendar
-import seaborn as sns; sns.set()
-import itertools
+import seaborn as sns; sns.set_theme()
 #import datetime
-from time import gmtime, strftime
-from matplotlib import cm
-from IPython.display import display
-#%matplotlib qt
-#%matplotlib inline
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -58,16 +77,12 @@ class EnergyCalculation():
             data_site (df): D-PV time series data with updated 'power_expected' column if the there is tripping in a non clear sky day.
         """
 
-        #sh_idx = (data_site.index.hour>= 7) & (data_site.index.hour <= 17)
-        #hour filter should not be necessary since outside of that hour, the power is zero anyway.
-
         date_dt = dt.datetime.strptime(date, '%Y-%m-%d').date()
         date_idx = data_site.index.date == date_dt
         energy_generated = data_site.loc[date_idx, 'power'].resample('h').mean().sum()/1000
 
-        if not is_clear_sky_day:
-            if tripping_curt_energy > 0:
-                data_site['power_expected'] = data_site['power_expected_linear']
+        if not is_clear_sky_day and tripping_curt_energy > 0:
+            data_site['power_expected'] = data_site['power_expected_linear']
 
         return energy_generated, data_site
 
@@ -102,3 +117,21 @@ class EnergyCalculation():
             energy_generated_expected = 'n/a'
 
         return energy_generated_expected, estimation_method
+
+### SUGGESTIONS SOURCERY
+# Hey there - I've reviewed your changes and they look great!
+
+# Here's what I looked at during the review
+# 🟡 General issues: 1 issue found
+# 🟢 Security: all looks good
+# 🟢 Testing: all looks good
+# 🟢 Complexity: all looks good
+# 🟢 Documentation: all looks good
+# e:/_UNHCR/CODE/solar_unhcr/src/energy_calculation.py:101
+
+# issue(bug_risk): Mixing string and float return types can cause type inconsistency
+#             estimation_method = 'n/a'
+#             energy_generated_expected = 'n/a'
+
+#         return energy_generated_expected, estimation_method
+# Returning 'n/a' as a string alongside float values breaks type consistency and could cause runtime errors in downstream processing.

@@ -1,23 +1,48 @@
+"""
+Overview
+This Python file (polyfit.py) provides a Polyfit class for estimating the expected energy generation of a 
+solar PV system without curtailment. It uses polynomial fitting to model the power generation curve 
+throughout the day, filtering the input data to remove noise and the effects of curtailment. 
+The core functionality revolves around fitting a quadratic polynomial to the power generation data and 
+then using this polynomial to estimate the expected power at any given time.
+
+Key Components
+Polyfit Class: 
+    This class encapsulates all the methods related to polynomial fitting and power generation estimation.
+    check_polyfit Method: 
+        This is the main method of the class. It orchestrates the entire process of data filtering, 
+        polynomial fitting, quality checking, and energy generation calculation. 
+        It takes the time series data and AC capacity as input and returns the fitted polynomial, 
+        a quality flag, and the calculated and expected energy generation.
+Filtering Methods: 
+    Several methods are dedicated to filtering the input data:
+    filter_sunrise_sunset: 
+        Filters data outside of sunrise and sunset times based on a power threshold.
+    filter_data_limited_gradients: 
+        Filters data points based on the gradient of the power curve to ensure a generally parabolic shape, characteristic of solar power generation.
+    filter_power_data_index: 
+        Filters out data points that indicate curtailment (sudden drops in power output).
+    get_datetime_list Method: 
+        Converts a list of string timestamps to numerical datetime objects suitable for polynomial fitting.
+    get_polyfit Method: 
+        Performs the polynomial fitting using NumPy's polyfit function. It takes the time and power data, and the degree of the polynomial (typically 2 for a quadratic fit) as input and returns the fitted polynomial.
+    get_single_date_time Method: 
+        Converts a single string timestamp to a numerical datetime object.
+Global Parameters: 
+    The file sets global parameters for font sizes and styling used in plotting 
+    (although plotting is commented out in the current code). These parameters enhance the visualization 
+    of the results if plotting is enabled.
+"""
+
 #IMPORT PACKAGES
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import datetime as dt
-import pytz #for timezone calculation
 import math
 import matplotlib.dates as md
-import gc
-import os
 from datetime import datetime
-import calendar
-import seaborn as sns; sns.set()
-import itertools
-#import datetime
-from time import gmtime, strftime
-from matplotlib import cm
-from IPython.display import display
-#%matplotlib qt
-#%matplotlib inline
+import seaborn as sns; sns.set_theme()
+
 
 #SET GLOBAL PARAMETERS
 # ================== Global parameters for fonts & sizes =================
@@ -341,3 +366,73 @@ class Polyfit():
         daetimeobject
         """
         return md.date2num(datetime.strptime(d, '%Y-%m-%d %H:%M:%S'))
+    
+### SUGGESTIONS SOURCERY
+# Hey there - I've reviewed your changes - here's some feedback:
+
+# Overall Comments:
+
+# Consider breaking down the Polyfit class into smaller, more focused classes (e.g., DataFilter, DateTimeConverter, PolynomialFitter) to improve maintainability and follow Single Responsibility Principle.
+# Document the significance and derivation of magic numbers (e.g., ANGLE_LOWER_LIMIT = 80, CONTINUANCE_LIMIT = 2) to help maintainers understand their purpose.
+# Add input validation and error handling to handle malformed data gracefully, particularly in methods like filter_power_data_index and check_polyfit.
+# Here's what I looked at during the review
+# 🟡 General issues: 2 issues found
+# 🟢 Security: all looks good
+# 🟢 Testing: all looks good
+# 🟢 Complexity: all looks good
+# 🟢 Documentation: all looks good
+# e:/_UNHCR/CODE/solar_unhcr/src/polyfit.py:136
+
+# suggestion(code_refinement): Overly complex gradient filtering method with multiple nested conditions
+
+#         return sunrise, sunset, df
+
+#     def filter_data_limited_gradients(self, power_array, time_array):
+#         """Filter the power_array data so it includes only decreasing gradient (so the shape is parabolic)
+
+# Consider refactoring the method to use more vectorized NumPy operations and simplify the logic. The current implementation creates multiple intermediate arrays and uses complex nested conditions that make the code hard to understand and maintain.
+
+# Resolve
+# e:/_UNHCR/CODE/solar_unhcr/src/polyfit.py:155
+
+# suggestion(code_refinement): Magic numbers used without clear documentation or configuration
+#             return None, None
+
+#         # IN GENERAL ANLGE MUST BE BETWEEN THESE VALUES
+#         ANGLE_LOWER_LIMIT = 80
+#         ANGLE_UPPER_LIMIT = 90
+
+# Consider making these threshold values configurable parameters or adding clear documentation explaining their significance in the gradient filtering process.
+
+# Suggested implementation:
+
+#             return None, None
+
+#         # Configurable angle thresholds for gradient filtering
+#         # These values represent the acceptable range of angles for valid gradient selection
+#         # Default values are set to filter out very flat or near-vertical gradients
+#         angle_lower_limit = kwargs.get('angle_lower_limit', 80)
+#         angle_upper_limit = kwargs.get('angle_upper_limit', 90)
+
+# Update the subsequent code to use angle_lower_limit and angle_upper_limit instead of the hardcoded constants
+# Add a docstring or comment explaining the purpose of these angle thresholds in the method
+# Consider adding type hints and validation for the input parameters
+# Example of further improvement in the method:
+
+# def some_method(self, *args, **kwargs):
+#     """
+#     Filter gradients based on their angle.
+
+#     Args:
+#         angle_lower_limit (float, optional): Minimum acceptable angle for gradient. Defaults to 80.
+#         angle_upper_limit (float, optional): Maximum acceptable angle for gradient. Defaults to 90.
+
+#     Returns:
+#         Filtered gradient data
+#     """
+#     angle_lower_limit = kwargs.get('angle_lower_limit', 80)
+#     angle_upper_limit = kwargs.get('angle_upper_limit', 90)
+
+#     # Validate input thresholds
+#     if not (0 <= angle_lower_limit < angle_upper_limit <= 180):
+#         raise ValueError("Invalid angle thresholds")
