@@ -261,3 +261,18 @@ class ClearSkyDay():
             return True, average_delta_y
         else:
             return False, average_delta_y
+
+### SUGGESTIONS SOURCERY
+# Hey there - I've reviewed your changes - here's some feedback:
+
+# Overall Comments:
+
+# Consider moving hardcoded parameters (GHI threshold of 530, smoothness threshold of 5) into configurable class parameters or settings file for better maintainability and flexibility.
+# Global matplotlib parameters should be encapsulated within the class or a separate visualization method to avoid affecting other parts of the application.
+# The days_in_month() method doesn't properly handle leap years for February. Consider using Python's calendar module or datetime functions instead.
+# Here's what I looked at during the review
+# 🟢 General issues: all looks good
+# 🟢 Security: all looks good
+# 🟢 Testing: all looks good
+# 🟢 Complexity: all looks good
+# 🟢 Documentation: all looks good

@@ -150,3 +150,17 @@ def compute(file_path, data_file, ghi_file):
         plt.show()
     else:
         print('Cannot analyze this sample due to incomplete data.')
+
+### SUGGESTIONS SOURCERY
+# Hey there - I've reviewed your changes - here's some feedback:
+
+# Overall Comments:
+
+# Consider breaking down the compute() function into smaller, more focused functions for better maintainability and testing. Currently it handles too many responsibilities (data loading, processing, curtailment calculations, and visualization).
+# Move the matplotlib visualization parameters from global scope into the DataVisualization class to prevent potential side effects on other parts of the application.
+# Here's what I looked at during the review
+# 🟢 General issues: all looks good
+# 🟢 Security: all looks good
+# 🟢 Testing: all looks good
+# 🟢 Complexity: all looks good
+# 🟢 Documentation: all looks good

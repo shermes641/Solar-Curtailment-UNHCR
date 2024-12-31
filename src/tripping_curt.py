@@ -857,3 +857,20 @@ class TrippingCurt():
             else:
                 tripping_response = 'None'
         return tripping_response, tripping_curt_energy, estimation_method, data_site
+
+### SUGGESTIONS SOURCERY
+# Hey there - I've reviewed your changes - here's some feedback:
+
+# Overall Comments:
+
+# Consider extracting hardcoded thresholds (e.g. CF_ZERO_APPROX, FIRST_DERIV_FALL_LIMIT etc.) into a configuration file or class constants for easier tuning and maintenance
+# The broad try/except blocks should catch specific exceptions and at minimum log the error details rather than silently continuing execution
+# Here's what I looked at during the review
+# e:/_UNHCR/CODE/solar_unhcr/src/tripping_curt.py:666
+
+# suggestion(code_refinement): Consider making the allowed_residual_band a configurable parameter or class attribute
+#             # Then the straight line correlation between polyfit and actual cf is calculated and residuals found for each cf
+#             # Data points with residuals greater than or less than the allowed residual band are removed and
+#             # the polynomial fit is recalculated using this smaller subset of points: 'polyfit_iter'
+#             allowed_residual_band = 0.05 # NOTE - set to 0.05 after some sensitivity testing and eye balling
+#             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
