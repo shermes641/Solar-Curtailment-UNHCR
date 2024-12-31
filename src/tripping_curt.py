@@ -648,10 +648,12 @@ class TrippingCurt():
             #clear_sky_days_df = pd.read_csv(CLEAR_SKY_DAYS_FILE_PATH)
             #clear_sky_days_list = clear_sky_days_df['clear_sky_days'].astype(str).tolist()
             #if data_date in clear_sky_days_list:
+            data_df = data_df.copy()
+            data_df.loc[:,'non_clear_sky_day_flag'] = 1
             if is_clear_sky_day:
-                data_df['non_clear_sky_day_flag'] = 0
-            else:
-                data_df['non_clear_sky_day_flag'] = 1
+                data_df.loc[:, 'non_clear_sky_day_flag'] = data_df.loc[:, 'non_clear_sky_day_flag'].fillna(0)
+            # else:
+            #     data_df.loc[:, 'non_clear_sky_day_flag'] = data_df.loc[:, 'non_clear_sky_day_flag'].fillna(1)
 
             # Get list of c_ids
             c_id_list = data_df['c_id'].drop_duplicates().tolist()
@@ -679,13 +681,13 @@ class TrippingCurt():
             # Try applying a 2nd order polynomial **to non-zero cf points only**
             # Needs to be 'try' because if there are ONLY zero points then error b/c we pass an empty df to polyfit function
             try:
-                test = pv_data[pv_data['cf']>0]
+                test = pv_data[pv_data['cf']>0].copy()
                 x = test['time_in_seconds']
                 y = test['cf']
                 z = np.polyfit(x,y,2)
 
                 # Calc the fitted line
-                test['polynomial_fit'] = z[0]*test['time_in_seconds']*test['time_in_seconds'] + \
+                test.loc[:,'polynomial_fit'] = z[0]*test['time_in_seconds']*test['time_in_seconds'] + \
                                                 z[1]*test['time_in_seconds'] + z[2]
                 # This is calculated for all times (not just non zero) as well for printing / checking
                 pv_data['polynomial_fit'] = z[0]*pv_data['time_in_seconds']*pv_data['time_in_seconds'] + \
@@ -697,7 +699,7 @@ class TrippingCurt():
                 test['ones'] = 1
                 A = test[['cf', 'ones']]
                 y = test['polynomial_fit']
-                m,c = np.linalg.lstsq(A,y)[0]
+                m,c = np.linalg.lstsq(A,y,rcond=None)[0]
                 test['y_line'] = c + m*test['cf']
 
                 # Remove data points where the residual is +/- allowed_residual_band from the line of best fit
@@ -710,7 +712,7 @@ class TrippingCurt():
                 y = test_filtered['cf']
                 z = np.polyfit(x,y,2)
 
-                test_filtered['polynomial_fit'] = z[0]*test_filtered['time_in_seconds']*test_filtered['time_in_seconds'] + \
+                test_filtered.loc[:,'polynomial_fit'] = z[0]*test_filtered['time_in_seconds']*test_filtered['time_in_seconds'] + \
                                                   z[1]*test_filtered['time_in_seconds'] + z[2]
                 pv_data['polyfit_iter'] = z[0]*pv_data['time_in_seconds']*pv_data['time_in_seconds'] + \
                                                 z[1]*pv_data['time_in_seconds'] + z[2]
